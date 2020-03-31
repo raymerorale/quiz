@@ -32,7 +32,7 @@
 
 		<b-button
 			v-if="!clicked"
-			:disabled="isCategory || isDifficulty"
+			:disabled="!isCategory || !isDifficulty"
 			class="bg-primary border-0 shadow w-25 mt-2"
 			@click="changed(), startQuiz();"
 			>Start
@@ -46,8 +46,8 @@
 		data() {
 			return {
 				clicked: false,
-				isCategory: true,
-				isDifficulty: true,
+				isCategory: false,
+				isDifficulty: false,
 				category: null,
 				difficulty: null,
 				// type: null,
@@ -114,13 +114,17 @@
 		watch: {
 			category: function(newVal){
 				if(newVal != null){
-					this.isCategory = false		
+					this.isCategory = true		
 				}
+				else
+					this.isCategory = false
 			},
 			difficulty: function(newVal){
 				if(newVal != null){
-					this.isDifficulty = false
+					this.isDifficulty = true
 				}
+				else
+					this.isDifficulty = false
 			}
 		}
 		

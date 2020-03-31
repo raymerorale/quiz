@@ -1,5 +1,5 @@
 <template>
-	<div class="question-box-container mt-2" v-if="currentQuestion">
+	<div class="question-box-container mt-2" v-if="currentQuestion && !isShowScore">
 		
 <b-jumbotron>
  
@@ -24,9 +24,20 @@
 		:disabled="selectedIndex === null"
 		v-if="!isAnswered"
 		>
-		Submit
+		{{ countDown }}
 	</b-button>
-	<b-button variant="success" href="#" @click="next" class="m-3" v-if="isAnswered">Next</b-button>
+	<b-button variant="success" href="#" class="m-3" 
+		@click="next" 
+		v-if="isAnswered && !isFinish"
+		>
+		Next
+	</b-button>
+	<b-button variant="outline-danger" href="#" class="m-3" 
+		@click="showScore" 
+		v-if="isFinish"
+		>
+		Finish
+	</b-button>
 
 </b-jumbotron>
     
@@ -61,7 +72,7 @@
 			return{
 				selectedIndex: null,
 				correctIndex: null,
-				isAnswered: false
+				isAnswered: false,
 			}
 		},
 		methods:{
@@ -76,6 +87,7 @@
 				}
 				this.isAnswered = true
 				this.increment(isCorrect)
+				this.$emit('submitted')
 			},
 			answerClass(index){
 				let answerClass = ''
@@ -88,8 +100,6 @@
 				return answerClass
 			}
 
-			
-
 		},
 		watch:{
 			currentQuestion: {
@@ -98,13 +108,17 @@
 					this.selectedIndex = null,
 					this.isAnswered = false
 				}
-			}
+			},
 		},
 		props:{
 			currentQuestion: Object,
-			next:Function,
-			increment: Function
-
+			next: Function,
+			increment: Function,
+			isFinish: Boolean,
+			reset: Function,
+			isShowScore: Boolean,
+			showScore: Function,
+			countDown: Number
 		}
 
 	}
