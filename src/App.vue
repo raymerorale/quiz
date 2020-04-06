@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <Header 
-      :index='index'
-      :numTotal='numTotal'
+    <Header
+      v-if="questions[index] != null"
       :progress='progress'
+      :category='categoryText'
+      :difficulty='difficulty'
+      :score='score'
     />
     <b-container class="col-12 col-md-6 col-lg-5">
       <Menu 
@@ -20,6 +22,7 @@
         :showScore='showScore'
         :countDown='countDown'
         v-on:submitted='submitted'
+        :qnum='index'
       />
       <ScoreBoard 
         :reset="resetQuiz"
@@ -59,6 +62,7 @@ export default {
       numTotal: 0,
       category: null,
       difficulty: null,
+      categoryText: null,
       isShowScore: false,
       countDown: 0
     }
@@ -74,18 +78,21 @@ export default {
   methods:{
     countDownTimer() {
         if(this.countDown > 0) {
+
           setTimeout(() => {
               this.countDown -= 5
               this.countDownTimer()
           }, 1000)
-        }     
+        }
     },
     nextQuestion(){
       if(this.index < (this.questions.length - 1)){
         this.index++
       }
+      this.isSubmitted = false
       this.countDown = 200
       this.countDownTimer()
+
     },
     increment(isCorrect){
       if(isCorrect){
@@ -108,9 +115,11 @@ export default {
     changeCategory(value){
       this.category = value.category
       this.difficulty = value.difficulty
+      this.categoryText = value.categoryText
       // this.type = value.type
     },
     resetQuiz(){
+      this.isSubmitted = false
       this.isFinish = false
       this.progress = 0
       this.question = null
@@ -140,11 +149,15 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Lato', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+body {
+
+  background-image: url('assets/bg.jpg');
+  background-size: cover;
 }
 </style>

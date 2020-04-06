@@ -1,13 +1,15 @@
 <template>
-	<div class="question-box-container mt-2" v-if="currentQuestion && !isShowScore">
+	<div class="question-box-container mt-4" v-if="currentQuestion && !isShowScore">
 		
-<b-jumbotron>
- 
-    <template v-slot:lead>
-      {{ question }}
-    </template>
-
-    <hr class="my-4">
+<b-card class="box bg-light shadow">
+	<span v-if='!isAnswered' class="float-right h5 p-3 mr-2 redorange"><b>+ {{ countDown }}</b></span>
+    <h5 class="text-left m-3 redorange">
+		<b>Question {{ qnum + 1 }}</b>
+    </h5>
+	<b-container class="col-10 question">
+		{{ question }}
+	</b-container>
+    <hr class="my-4 w-75">
     <b-list-group>
 		<b-list-group-item
 			v-for="(answer, index) in answers"
@@ -15,20 +17,22 @@
 			@click="selectedAnswer(index)"
 			:class="answerClass(index)"
 			:disabled="isAnswered"
+			class='choice border rounded-pill w-75'
 			>
 				{{ answer }}
 		</b-list-group-item>
 	</b-list-group>
-	<b-button variant="primary" href="#" class="m-3" 
+	<b-button href="#" class="m-3 bg-redorange border-0 shadow w" 
 		@click="submitAnswer"
 		:disabled="selectedIndex === null"
 		v-if="!isAnswered"
 		>
-		{{ countDown }}
+		Submit
 	</b-button>
-	<b-button variant="success" href="#" class="m-3" 
+	<b-button variant="success" href="#" class="m-3 w" 
 		@click="next" 
 		v-if="isAnswered && !isFinish"
+		:disabled='nextDisabled'
 		>
 		Next
 	</b-button>
@@ -39,7 +43,7 @@
 		Finish
 	</b-button>
 
-</b-jumbotron>
+</b-card>
     
     
 </div>
@@ -73,9 +77,15 @@
 				selectedIndex: null,
 				correctIndex: null,
 				isAnswered: false,
+				nextDisabled: true
 			}
 		},
 		methods:{
+			delay(){
+				setTimeout(() => {
+				this.nextDisabled = false
+				}, 1000)
+			},
 			selectedAnswer(index){
 				this.selectedIndex = index
 				this.correctIndex = this.answers.indexOf(atob(this.currentQuestion.correct_answer))
@@ -85,6 +95,7 @@
 				if(this.selectedIndex === this.correctIndex){
 					isCorrect = true
 				}
+				this.delay()
 				this.isAnswered = true
 				this.increment(isCorrect)
 				this.$emit('submitted')
@@ -92,7 +103,7 @@
 			answerClass(index){
 				let answerClass = ''
 				if(!this.isAnswered && this.selectedIndex === index)
-					answerClass = 'bg-primary text-light'
+					answerClass = 'bg-redorange text-light'
 				else if(this.isAnswered && this.correctIndex === index)
 					answerClass = 'bg-success text-light'
 				else if(this.isAnswered && this.selectedIndex === index && this.correctIndex !== index)
@@ -106,7 +117,8 @@
 				immediate: true,
 				handler(){
 					this.selectedIndex = null,
-					this.isAnswered = false
+					this.isAnswered = false,
+					this.nextDisabled = true
 				}
 			},
 		},
@@ -118,7 +130,8 @@
 			reset: Function,
 			isShowScore: Boolean,
 			showScore: Function,
-			countDown: Number
+			countDown: Number,
+			qnum: Number
 		}
 
 	}
@@ -130,5 +143,23 @@
 }
 .question-box-container{
 	margin: auto;
+}
+.choice{
+	margin: 4px auto 4px auto;
+	padding: 6px;
+	font-size: 15px;
+}
+.question{
+	font-size: 17px;
+	margin-top: 1.75em;
+}
+.redorange{
+	color: #f3533b !important;
+}
+.bg-redorange{
+	background: #f3533b !important;
+}
+.w{
+	width: 5em;
 }
 </style>
